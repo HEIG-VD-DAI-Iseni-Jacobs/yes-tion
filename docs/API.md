@@ -1,7 +1,7 @@
 # yes-tion API
 
-The yes-tion API allows to manage notes. It uses the HTTP protocol and the JSON
-format.
+The yes-tion API allows to manage notes. It uses the HTTP protocol, the JSON
+format and cookies to manage sessions.
 
 The API is based on the CRUD pattern. It has the following operations:
 
@@ -53,9 +53,10 @@ Create a new note.
 
 #### Request
 
+The request must include the `user` cookie.
+
 The request body must contain a JSON object with the following properties:
 
-- `userId` - The user's id
 - `noteTitle` - The unique note's title
 - `noteContent` - The note's content
 
@@ -63,29 +64,32 @@ The request body must contain a JSON object with the following properties:
 
 The response body contains a JSON object with the following properties:
 
-- `noteTitle` - The unique note's title
+- `noteId` - The unique identifier of the note
+- `noteTitle` - The note's title
 - `noteContent` - The note's content
 
 #### Status codes
 
 - `201` (Created) - The note has been successfully created
 - `400` (Bad Request) - The request body is invalid
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
 - `409` (Conflict) - The note already exists
 
 
 ### Update a note
 
-- `PUT /notes/{title}`
+- `PUT /notes/{noteId}`
 
-Update a note by its title.
+Update a note by its unique identifier.
 
 #### Request
 
-The request path must contain the title of the note.
+The request path must contain the id of the note.
+
+The request must include the `user` cookie.
 
 The request body must contain a JSON object with the following properties:
 
-- `userId` - The user's id
 - `noteTitle` - The note's updated title
 - `noteContent` - The note's updated content
 
@@ -100,8 +104,8 @@ The response body contains a JSON object with the following properties:
 
 - `200` (OK) - The note has been successfully updated
 - `400` (Bad Request) - The request body is invalid
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
 - `404` (Not Found) - The note does not exist
-- `409` (Conflict) - The note's title already exists
 
 
 ### Get all notes titles
@@ -112,61 +116,64 @@ Get all user's notes.
 
 #### Request
 
-The request must contain the following query parameter:
+The request must include the `user` cookie.
 
-- `userId` - The user's id
+The request contains no query parameters.
 
 #### Response
 
 The response body contains a JSON array with the following properties:
 
-- `noteTitle` - The unique note's title
+- `noteId` - The unique identifier of the note
+- `noteTitle` - The note's title
 - `noteContent` - The note's content
 
 #### Status codes
 
 - `200` (OK) - The notes have been successfully retrieved
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
 
 
 ### Get one note
 
-- `GET /notes/{title}`
+- `GET /notes/{noteId}`
 
-Get one note by its title.
+Get one note by its unique identifier.
 
 #### Request
 
-The request path must contain the title of the note.
+The request path must contain the id of the note.
 
-The request must contain the following query parameter:
+The request must include the `user` cookie.
 
-- `userId` - The user's id
+The request contains no query parameters.
 
 #### Response
 
 The response body contains a JSON object with the following properties:
 
-- `noteTitle` - The unique note's title
+- `noteId` - The unique identifier of the note
+- `noteTitle` - The note's title
 - `noteContent` - The note's content
 
 #### Status codes
 
 - `200` (OK) - The note has been successfully retrieved
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
 - `404` (Not Found) - The note does not exist
+
 
 ### Delete a note
 
-- `DELETE /notes/{title}`
+- `DELETE /notes/{noteId}`
 
-Delete a note by its title.
+Delete a note by its unique identifier.
 
 #### Request
 
-The request path must contain the title of the note.
+The request path must contain the id of the note.
 
-The request must contain the following query parameter:
-
-- `userId` - The user's id
+The request must include the `user` cookie.
 
 #### Response
 
@@ -175,6 +182,7 @@ The response body is empty.
 #### Status codes
 
 - `204` (No Content) - The note has been successfully deleted
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
 - `404` (Not Found) - The note does not exist
 
 ### Login
@@ -191,15 +199,14 @@ The request body must contain a JSON object with the following propertie:
 
 #### Response
 
-The response body contains a JSON object with the following properties:
-
-- `userId` - The unique identifier of the user
+The response body is empty. A `user` cookie is set with the ID of the user.
 
 #### Status codes
 
-- `200` (OK) - The user has been successfully logged in
+- `204` (No Content) - The user has been successfully logged in
 - `400` (Bad Request) - The request body is invalid
 - `401` (Unauthorized) - The user does not exist
+
 
 ### Logout
 
@@ -209,15 +216,16 @@ Logout a user.
 
 #### Request
 
-The request body is empty.
+The request must include the `user` cookie.
 
 #### Response
 
-The response body is empty. The `userId` is deleted on the client side.
+The response body is empty. The `user` cookie is removed.
 
 #### Status codes
 
 - `204` (No Content) - The user has been successfully logged out
+
 
 ### Profile
 
@@ -227,15 +235,13 @@ Get the current user (the user that is logged in).
 
 #### Request
 
-The request body must contain a JSON object with the following properties:
-
-- `userId` - The unique identifier of the user
+The request must include the `user` cookie.
 
 #### Response
 
 The response body contains a JSON object with the following properties:
 
-- `id` - The unique identifier of the user
+- `userId` - The unique identifier of the user
 - `firstName` - The first name of the user
 - `lastName` - The last name of the user
 - `email` - The email address of the user

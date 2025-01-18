@@ -1,5 +1,7 @@
 package ch.heigvd.dai.notes;
 
+import static ch.heigvd.dai.utils.CookieUtils.getUserIdFromCookie;
+
 import ch.heigvd.dai.users.User;
 import io.javalin.http.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +31,7 @@ public class NotesController {
    */
   public void createNote(Context ctx) {
     // Get the user from the cookie
-    Integer currentUserId = getUserIdFromCookie(ctx);
+    Integer currentUserId = getUserIdFromCookie(ctx, users);
 
     // Deserialize the note from the request body
     CreateOrUpdateNoteRequest request =
@@ -57,7 +59,7 @@ public class NotesController {
    */
   public void updateNote(Context ctx) {
     // Check session
-    Integer currentUserId = getUserIdFromCookie(ctx);
+    Integer currentUserId = getUserIdFromCookie(ctx, users);
 
     // Get the note ID from the path
     Integer noteId = ctx.pathParamAsClass("id", Integer.class).get();
@@ -96,7 +98,7 @@ public class NotesController {
    */
   public void getAllNotes(Context ctx) {
     // Check session
-    Integer currentUserId = getUserIdFromCookie(ctx);
+    Integer currentUserId = getUserIdFromCookie(ctx, users);
 
     // Get the notes of the user
     ctx.json(notes.values().stream().filter(note -> note.userId.equals(currentUserId)).toArray());
@@ -111,7 +113,7 @@ public class NotesController {
    */
   public void getOneNote(Context ctx) {
     // Check session
-    Integer currentUserId = getUserIdFromCookie(ctx);
+    Integer currentUserId = getUserIdFromCookie(ctx, users);
 
     // Get the note ID from the path
     Integer noteId = ctx.pathParamAsClass("id", Integer.class).get();
@@ -135,7 +137,7 @@ public class NotesController {
    */
   public void deleteOneNote(Context ctx) {
     // Check session
-    Integer currentUserId = getUserIdFromCookie(ctx);
+    Integer currentUserId = getUserIdFromCookie(ctx, users);
 
     // Get the note ID from the path
     Integer noteId = ctx.pathParamAsClass("id", Integer.class).get();
@@ -149,35 +151,6 @@ public class NotesController {
 
     notes.remove(noteId);
     ctx.status(HttpStatus.NO_CONTENT);
-  }
-
-  /**
-   * Retrieves the user ID from the cookie.
-   *
-   * @param ctx the Javalin context of the request
-   * @return the authenticated user's ID
-   * @throws UnauthorizedResponse if the user cookie is missing, invalid, or does not map to a user
-   */
-  private Integer getUserIdFromCookie(Context ctx) {
-    String userIdCookie = ctx.cookie("user");
-
-    if (userIdCookie == null) {
-      throw new UnauthorizedResponse("Missing or invalid user cookie");
-    }
-
-    Integer userId;
-    try {
-      userId = Integer.parseInt(userIdCookie);
-    } catch (NumberFormatException e) {
-      throw new UnauthorizedResponse("Invalid user cookie");
-    }
-
-    User user = users.get(userId);
-    if (user == null) {
-      throw new UnauthorizedResponse("No user found for this cookie");
-    }
-
-    return userId;
   }
 
   /** Class representing the request body for creating or updating a note. */

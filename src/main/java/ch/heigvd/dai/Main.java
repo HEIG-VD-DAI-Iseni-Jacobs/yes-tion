@@ -1,6 +1,5 @@
 package ch.heigvd.dai;
 
-import ch.heigvd.dai.auth.AuthController;
 import ch.heigvd.dai.notes.*;
 import ch.heigvd.dai.users.*;
 import io.javalin.Javalin;
@@ -16,17 +15,16 @@ public class Main {
     ConcurrentHashMap<Integer, User> users = new ConcurrentHashMap<>();
     ConcurrentHashMap<Integer, Note> notes = new ConcurrentHashMap<>();
 
-    AuthController authController = new AuthController(users);
-    UsersController usersController = new UsersController(users);
+    UsersController usersController = new UsersController(users, notes);
     NotesController notesController = new NotesController(users, notes);
 
-    // Auth routes
-    app.post("/login", authController::login);
-    app.post("/logout", authController::logout);
-    app.get("/profile", authController::profile);
-
     // Users routes
-    app.post("/users", usersController::createUser);
+    app.post("/signup", usersController::signUp);
+    app.post("/login", usersController::login);
+    app.post("/logout", usersController::logout);
+    app.get("/profile", usersController::getProfile);
+    app.put("/profile", usersController::updateProfile);
+    app.delete("/profile", usersController::deleteProfile);
 
     // Notes routes
     app.post("/notes", notesController::createNote);

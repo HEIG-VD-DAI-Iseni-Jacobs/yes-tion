@@ -73,7 +73,6 @@ The response body contains a JSON object with the following properties:
 - `201` (Created) - The note has been successfully created
 - `400` (Bad Request) - The request body is invalid
 - `401` (Unauthorized) - Missing or invalid `user` cookie.
-- `409` (Conflict) - The note already exists
 
 
 ### Update a note

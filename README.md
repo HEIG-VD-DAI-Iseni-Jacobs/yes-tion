@@ -31,8 +31,7 @@ You can keep this file or delete it after you finish your tests.
 To create an account, you need to send a `POST` request to the `/users` endpoint with a JSON payload containing the first name, last name, and email of the user.
 
 ```bash
-curl POST http://localhost:8080/users \
-  -H "Content-Type: application/json" \
+curl POST http://localhost:8080/signup \
   -d '{
     "firstName": "John",
     "lastName": "Doe",
@@ -40,15 +39,59 @@ curl POST http://localhost:8080/users \
   }'
 ```
 
-### Login
+### Log in
 
 To login, you need to send a `POST` request to the `/login` endpoint with a JSON payload containing the email of the user and store the cookies in a file.
 
 ```bash
 curl POST http://localhost:8080/login \
-  -H "Content-Type: application/json" \
   -d '{"email": "john.doe@example.com"}' \
   -c cookies.txt
+```
+
+### Log out
+
+To logout, you need to send a `POST` request to the `/logout` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl POST http://localhost:8080/logout \
+  -b cookies.txt
+```
+
+### Get the profile
+
+To get the profile, you need to send a `GET` request to the `/profile` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl GET http://localhost:8080/profile \
+  -b cookies.txt
+```
+
+### Update the profile
+
+To update the profile, you need to send a `PUT` request to the `/profile` endpoint with a JSON payload containing the new first name, last name, or email of the user.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl PUT http://localhost:8080/profile \
+  -d '{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": ""
+    }' \
+    -b cookies.txt
+```
+
+### Delete the account
+
+To delete the account, you need to send a `DELETE` request to the `/profile` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl DELETE http://localhost:8080/profile \
+  -b cookies.txt
 ```
 
 ### Create a note
@@ -108,15 +151,5 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl DELETE http://localhost:8080/notes/1 \
-  -b cookies.txt
-```
-
-### Logout
-
-To logout, you need to send a `POST` request to the `/logout` endpoint.
-You also need to send the cookies stored in the login step.
-
-```bash
-curl POST http://localhost:8080/logout \
   -b cookies.txt
 ```

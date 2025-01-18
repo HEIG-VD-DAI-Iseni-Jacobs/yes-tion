@@ -6,10 +6,6 @@ public class User {
   public String lastName;
   public String email;
 
-  public User() {
-    // Empty constructor for serialisation/deserialization
-  }
-
   public User(Integer id, String firstName, String lastName, String email) {
     this.userId = id;
     this.firstName = firstName;

@@ -1,11 +1,16 @@
 package ch.heigvd.dai.users;
 
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Controller responsible for managing users. Supports user creation and ensures that email
+ * addresses are unique.
+ */
 public class UsersController {
 
   private final ConcurrentHashMap<Integer, User> users;
@@ -15,6 +20,14 @@ public class UsersController {
     this.users = users;
   }
 
+  /**
+   * Creates a new user if the email address is not already in use.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws ConflictResponse if a user with the same email already exists
+   * @throws BadRequestResponse if any of the required fields (firstName, lastName, email) are
+   *     missing
+   */
   public void createUser(Context ctx) {
     // body deserialization
     CreateUserRequest request =
@@ -32,11 +45,9 @@ public class UsersController {
     }
 
     // create the user
-    User user = new User();
-    user.userId = userIdCounter.getAndIncrement();
-    user.firstName = request.firstName;
-    user.lastName = request.lastName;
-    user.email = request.email;
+    User user =
+        new User(
+            userIdCounter.getAndIncrement(), request.firstName, request.lastName, request.email);
 
     // store the user
     users.put(user.userId, user);
@@ -45,6 +56,7 @@ public class UsersController {
     ctx.json(user);
   }
 
+  /** Class representing the request body for creating a user. */
   private static class CreateUserRequest {
     public String firstName;
     public String lastName;

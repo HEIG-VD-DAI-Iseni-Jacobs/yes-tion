@@ -6,10 +6,6 @@ public class Note {
   public String noteTitle;
   public String noteContent;
 
-  public Note() {
-    // Empty constructor for serialisation/deserialization
-  }
-
   public Note(Integer noteId, Integer userId, String noteTitle, String noteContent) {
     this.noteId = noteId;
     this.userId = userId;

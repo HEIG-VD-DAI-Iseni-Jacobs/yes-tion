@@ -5,6 +5,10 @@ import io.javalin.http.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Controller responsible for handling operations related to notes. Supports CRUD operations for
+ * notes and ensures notes are linked to the correct user session.
+ */
 public class NotesController {
   private final ConcurrentHashMap<Integer, Note> notes;
   private final ConcurrentHashMap<Integer, User> users;
@@ -17,9 +21,11 @@ public class NotesController {
   }
 
   /**
-   * POST /notes Body attendu : { "noteTitle": "...", "noteContent": "..." } Nécessite le cookie
-   * "user". Réponses : 201 si création 400 si corps invalide 401 si utilisateur non connecté 409 si
-   * la noteTitle existe déjà (on considère "unique" dans tout le système ou pour le même user)
+   * Creates a new note for the authenticated user.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws UnauthorizedResponse if the user is not authenticated
+   * @throws BadRequestResponse if the note's title or content is missing
    */
   public void createNote(Context ctx) {
     // Get the user from the cookie
@@ -42,10 +48,12 @@ public class NotesController {
   }
 
   /**
-   * PUT /notes/{noteId} Body attendu : { "noteTitle": "...", "noteContent": "..." } Nécessite le
-   * cookie "user". Réponses : 200 si mise à jour 400 si corps invalide 401 si utilisateur non
-   * connecté 404 si la note n'existe pas OU n'appartient pas à l'utilisateur 409 si le nouveau
-   * titre existe déjà
+   * Updates an existing note for the authenticated user.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws UnauthorizedResponse if the user is not authenticated
+   * @throws NotFoundResponse if the note is not found or does not belong to the user
+   * @throws BadRequestResponse if the note title or content is missing
    */
   public void updateNote(Context ctx) {
     // Check session
@@ -81,8 +89,10 @@ public class NotesController {
   }
 
   /**
-   * GET /notes Nécessite le cookie "user". Renvoie la liste de toutes les notes de l'utilisateur.
-   * Réponses : 200 si ok 401 si pas connecté
+   * Retrieves all notes for the authenticated user.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws UnauthorizedResponse if the user is not authenticated
    */
   public void getAllNotes(Context ctx) {
     // Check session
@@ -93,9 +103,11 @@ public class NotesController {
   }
 
   /**
-   * GET /notes/{noteId} Nécessite le cookie "user". Renvoie la note si elle appartient à
-   * l'utilisateur. Réponses : 200 si ok 401 si pas connecté 404 si la note n'existe pas ou
-   * n'appartient pas à l'utilisateur
+   * Retrieves a single note by its ID for the authenticated user.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws UnauthorizedResponse if the user is not authenticated
+   * @throws NotFoundResponse if the note is not found or does not belong to the user
    */
   public void getOneNote(Context ctx) {
     // Check session
@@ -115,8 +127,11 @@ public class NotesController {
   }
 
   /**
-   * DELETE /notes/{noteId} Nécessite le cookie "user". Réponses : 204 si ok 401 si pas connecté 404
-   * si la note n'existe pas ou n'appartient pas à l'utilisateur
+   * Deletes a single note by its ID for the authenticated user.
+   *
+   * @param ctx the Javalin context of the request
+   * @throws UnauthorizedResponse if the user is not authenticated
+   * @throws NotFoundResponse if the note is not found or does not belong to the user
    */
   public void deleteOneNote(Context ctx) {
     // Check session
@@ -136,6 +151,13 @@ public class NotesController {
     ctx.status(HttpStatus.NO_CONTENT);
   }
 
+  /**
+   * Retrieves the user ID from the cookie.
+   *
+   * @param ctx the Javalin context of the request
+   * @return the authenticated user's ID
+   * @throws UnauthorizedResponse if the user cookie is missing, invalid, or does not map to a user
+   */
   private Integer getUserIdFromCookie(Context ctx) {
     String userIdCookie = ctx.cookie("user");
 
@@ -158,6 +180,7 @@ public class NotesController {
     return userId;
   }
 
+  /** Class representing the request body for creating or updating a note. */
   private static class CreateOrUpdateNoteRequest {
     public String noteTitle;
     public String noteContent;

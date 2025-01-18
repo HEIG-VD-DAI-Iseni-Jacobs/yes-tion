@@ -52,38 +52,11 @@
         </executions>
       </plugin>
 
-      <!-- Needed to include dependencies in JAR file -->
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>ch.heigvd.dai.Main</mainClass>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                  <resource>MANIFEST.MF</resource>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Needed to include dependencies for Javalin -->
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.0</version>
         <executions>
           <execution>
             <goals>

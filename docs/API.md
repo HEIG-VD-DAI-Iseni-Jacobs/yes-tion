@@ -16,9 +16,9 @@ Users are also able to [log in](#login) and [logout](#logout). They can also get
 
 ## Endpoints
 
-### Create a new user
+### Create a new account
 
-- `POST /users`
+- `POST /signup`
 
 Create a new user.
 
@@ -44,6 +44,126 @@ The response body contains a JSON object with the following properties:
 - `201` (Created) - The user has been successfully created
 - `400` (Bad Request) - The request body is invalid
 - `409` (Conflict) - The user already exists
+
+
+### Login
+
+- `POST /login`
+
+Login a user.
+
+#### Request
+
+The request body must contain a JSON object with the following propertie:
+
+- `email` - The email address of the user
+
+#### Response
+
+The response body is empty. A `user` cookie is set with the ID of the user.
+
+#### Status codes
+
+- `204` (No Content) - The user has been successfully logged in
+- `400` (Bad Request) - The request body is invalid
+- `401` (Unauthorized) - The user does not exist
+
+
+### Profile
+
+- `GET /profile`
+
+Get the current user (the user that is logged in).
+
+#### Request
+
+The request must include the `user` cookie.
+
+#### Response
+
+The response body contains a JSON object with the following properties:
+
+- `userId` - The unique identifier of the user
+- `firstName` - The first name of the user
+- `lastName` - The last name of the user
+- `email` - The email address of the user
+
+#### Status codes
+
+- `200` (OK) - The user has been successfully retrieved
+- `401` (Unauthorized) - The user is not logged in
+
+
+### Update user's profile
+
+- `PUT /profile`
+
+Update the current user (the user that is logged in).
+
+#### Request
+
+The request must include the `user` cookie.
+
+The request body must contain a JSON object with the following properties:
+
+- `firstName` - The first name of the user
+- `lastName` - The last name of the user
+- `email` - The email address of the user
+
+#### Response
+
+The response body contains a JSON object with the following properties:
+
+- `userId` - The unique identifier of the user
+- `firstName` - The first name of the user
+- `lastName` - The last name of the user
+- `email` - The email address of the user
+
+#### Status codes
+
+- `200` (OK) - The user has been successfully updated
+- `400` (Bad Request) - The request body is invalid
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
+
+
+### Delete user's profile
+
+- `DELETE /profile`
+
+Delete the current user (the user that is logged in).
+
+#### Request
+
+The request must include the `user` cookie.
+
+#### Response
+
+The response body is empty.
+
+#### Status codes
+
+- `204` (No Content) - The user has been successfully deleted
+- `401` (Unauthorized) - Missing or invalid `user` cookie.
+
+
+### Logout
+
+- `POST /logout`
+
+Logout a user.
+
+#### Request
+
+The request must include the `user` cookie.
+
+#### Response
+
+The response body is empty. The `user` cookie is removed.
+
+#### Status codes
+
+- `204` (No Content) - The user has been successfully logged out
+
 
 ### Create a note
 
@@ -183,69 +303,3 @@ The response body is empty.
 - `204` (No Content) - The note has been successfully deleted
 - `401` (Unauthorized) - Missing or invalid `user` cookie.
 - `404` (Not Found) - The note does not exist
-
-### Login
-
-- `POST /login`
-
-Login a user.
-
-#### Request
-
-The request body must contain a JSON object with the following propertie:
-
-- `email` - The email address of the user
-
-#### Response
-
-The response body is empty. A `user` cookie is set with the ID of the user.
-
-#### Status codes
-
-- `204` (No Content) - The user has been successfully logged in
-- `400` (Bad Request) - The request body is invalid
-- `401` (Unauthorized) - The user does not exist
-
-
-### Logout
-
-- `POST /logout`
-
-Logout a user.
-
-#### Request
-
-The request must include the `user` cookie.
-
-#### Response
-
-The response body is empty. The `user` cookie is removed.
-
-#### Status codes
-
-- `204` (No Content) - The user has been successfully logged out
-
-
-### Profile
-
-- `GET /profile`
-
-Get the current user (the user that is logged in).
-
-#### Request
-
-The request must include the `user` cookie.
-
-#### Response
-
-The response body contains a JSON object with the following properties:
-
-- `userId` - The unique identifier of the user
-- `firstName` - The first name of the user
-- `lastName` - The last name of the user
-- `email` - The email address of the user
-
-#### Status codes
-
-- `200` (OK) - The user has been successfully retrieved
-- `401` (Unauthorized) - The user is not logged in

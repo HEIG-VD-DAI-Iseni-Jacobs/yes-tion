@@ -12,6 +12,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/io.javalin/javalin-bundle -->
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin-bundle</artifactId>
+      <version>6.3.0</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <!-- https://mvnrepository.com/artifact/com.diffplug.spotless/spotless-maven-plugin -->
@@ -42,6 +51,7 @@
           </execution>
         </executions>
       </plugin>
+
       <!-- Needed to include dependencies in JAR file -->
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
       <plugin>
@@ -63,6 +73,43 @@
                   <resource>MANIFEST.MF</resource>
                 </transformer>
               </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Needed to include dependencies for Javalin -->
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ch.heigvd.dai.Main</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                  <resource>MANIFEST.MF</resource>
+                </transformer>
+              </transformers>
+              <filters>
+                <!-- This filter is needed to avoid a bug in the shade plugin -->
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>

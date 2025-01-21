@@ -34,7 +34,9 @@ sudo apt install curl
 
 Then, our application uses cookies to manage the user's session.
 To store the cookies between requests, some commands will create a `cookies.txt` file in the current directory.
-You can keep this file or delete it after you finish your tests.
+To simplify this process, you can change the current directory to the /test-app directory which already contains the cookies.txt file.
+Or, you can stay in any directory.
+Afterward, you can keep this file or delete it after you finish your tests.
 
 ### Create an account
 

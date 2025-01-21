@@ -7,6 +7,16 @@
 This project is a simple web application that allows users to create, read, update, and delete notes.
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
+## Launch app with Maven
+
+```bash
+# Launch the application without tests
+mvn spotless:apply dependency:go-offline clean compile package -DskipTests
+
+# Launch tests
+mvn test
+```
+
 # `TODO` : Modify the commands to execute them with the vm
 ## Usage
 
@@ -56,7 +66,7 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl POST http://localhost:8080/logout \
-  -b cookies.txt
+  -c cookies.txt
 ```
 
 ### Get the profile

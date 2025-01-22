@@ -1,3 +1,167 @@
 # Yes-tion
 
 [No-tion](https://github.com/HEIG-VD-DAI-Iseni-Jacobs/no-tion), but yes.
+
+## Description
+
+This project is a simple web application that allows users to create, read, update, and delete notes.
+It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
+
+## Launch app with Maven
+
+```bash
+# Launch the application without tests
+mvn spotless:apply dependency:go-offline clean compile package -DskipTests
+
+# Launch tests
+mvn test
+```
+
+# `TODO` : Modify the commands to execute them with the vm
+## Usage
+
+In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
+
+### Requirements
+
+At first, you need to have the `curl` command-line tool installed on your machine.
+If you don't have it, you can install it by executing the following command:
+
+```bash
+# Install curl
+sudo apt install curl
+```
+
+Then, our application uses cookies to manage the user's session.
+To store the cookies between requests, some commands will create a `cookies.txt` file in the current directory.
+To simplify this process, you can change the current directory to the /test-app directory which already contains the cookies.txt file.
+Or, you can stay in any directory.
+Afterward, you can keep this file or delete it after you finish your tests.
+
+### Create an account
+
+To create an account, you need to send a `POST` request to the `/users` endpoint with a JSON payload containing the first name, last name, and email of the user.
+
+```bash
+curl -X POST http://localhost:8080/signup \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com"
+  }'
+```
+
+### Log in
+
+To login, you need to send a `POST` request to the `/login` endpoint with a JSON payload containing the email of the user and store the cookies in a file.
+
+```bash
+curl -X POST http://localhost:8080/login \
+  -d '{"email": "john.doe@example.com"}' \
+  -c cookies.txt
+```
+
+### Log out
+
+To logout, you need to send a `POST` request to the `/logout` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X POST http://localhost:8080/logout \
+  -c cookies.txt
+```
+
+### Get the profile
+
+To get the profile, you need to send a `GET` request to the `/profile` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X GET http://localhost:8080/profile \
+  -b cookies.txt
+```
+
+### Update the profile
+
+To update the profile, you need to send a `PUT` request to the `/profile` endpoint with a JSON payload containing the new first name, last name, or email of the user.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X PUT http://localhost:8080/profile \
+  -d '{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": ""
+    }' \
+    -b cookies.txt
+```
+
+### Delete the account
+
+To delete the account, you need to send a `DELETE` request to the `/profile` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X DELETE http://localhost:8080/profile \
+  -c cookies.txt
+```
+
+### Create a note
+
+To create a note, you need to send a `POST` request to the `/notes` endpoint with a JSON payload containing the title and content of the note.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X POST http://localhost:8080/notes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "noteTitle": "Ma première note",
+    "noteContent": "Contenu de ma note"
+  }' \
+  -d cookies.txt
+```
+
+### Get all notes
+
+To get all notes, you need to send a `GET` request to the `/notes` endpoint.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X GET http://localhost:8080/notes \
+  -b cookies.txt
+```
+
+### Get a note
+
+To get a note, you need to send a `GET` request to the `/notes/{noteId}` endpoint, where `{noteId}` is the identifier of the note.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X GET http://localhost:8080/notes/1 \
+  -b cookies.txt
+```
+
+### Update a note
+
+To update a note, you need to send a `PUT` request to the `/notes/{noteId}` endpoint with a JSON payload containing the new title and content of the note.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X PUT http://localhost:8080/notes/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "noteTitle": "Titre modifié",
+    "noteContent": "Nouveau contenu"
+  }' \
+  -b cookies.txt
+```
+
+### Delete a note
+
+To delete a note, you need to send a `DELETE` request to the `/notes/{noteId}` endpoint, where `{noteId}` is the identifier of the note.
+You also need to send the cookies stored in the login step.
+
+```bash
+curl -X DELETE http://localhost:8080/notes/1 \
+  -b cookies.txt
+```

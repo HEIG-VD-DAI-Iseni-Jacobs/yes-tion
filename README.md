@@ -43,7 +43,7 @@ Afterward, you can keep this file or delete it after you finish your tests.
 To create an account, you need to send a `POST` request to the `/users` endpoint with a JSON payload containing the first name, last name, and email of the user.
 
 ```bash
-curl POST http://localhost:8080/signup \
+curl -X POST http://localhost:8080/signup \
   -d '{
     "firstName": "John",
     "lastName": "Doe",
@@ -56,7 +56,7 @@ curl POST http://localhost:8080/signup \
 To login, you need to send a `POST` request to the `/login` endpoint with a JSON payload containing the email of the user and store the cookies in a file.
 
 ```bash
-curl POST http://localhost:8080/login \
+curl -X POST http://localhost:8080/login \
   -d '{"email": "john.doe@example.com"}' \
   -c cookies.txt
 ```
@@ -67,7 +67,7 @@ To logout, you need to send a `POST` request to the `/logout` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl POST http://localhost:8080/logout \
+curl -X POST http://localhost:8080/logout \
   -c cookies.txt
 ```
 
@@ -77,7 +77,7 @@ To get the profile, you need to send a `GET` request to the `/profile` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl GET http://localhost:8080/profile \
+curl -X GET http://localhost:8080/profile \
   -b cookies.txt
 ```
 
@@ -87,7 +87,7 @@ To update the profile, you need to send a `PUT` request to the `/profile` endpoi
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl PUT http://localhost:8080/profile \
+curl -X PUT http://localhost:8080/profile \
   -d '{
     "firstName": "Jane",
     "lastName": "Doe",
@@ -102,8 +102,8 @@ To delete the account, you need to send a `DELETE` request to the `/profile` end
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl DELETE http://localhost:8080/profile \
-  -b cookies.txt
+curl -X DELETE http://localhost:8080/profile \
+  -c cookies.txt
 ```
 
 ### Create a note
@@ -112,13 +112,13 @@ To create a note, you need to send a `POST` request to the `/notes` endpoint wit
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl POST http://localhost:8080/notes \
+curl -X POST http://localhost:8080/notes \
   -H "Content-Type: application/json" \
   -d '{
     "noteTitle": "Ma première note",
     "noteContent": "Contenu de ma note"
   }' \
-  -b cookies.txt
+  -d cookies.txt
 ```
 
 ### Get all notes
@@ -127,7 +127,7 @@ To get all notes, you need to send a `GET` request to the `/notes` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl GET http://localhost:8080/notes \
+curl -X GET http://localhost:8080/notes \
   -b cookies.txt
 ```
 
@@ -137,7 +137,7 @@ To get a note, you need to send a `GET` request to the `/notes/{noteId}` endpoin
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl GET http://localhost:8080/notes/1 \
+curl -X GET http://localhost:8080/notes/1 \
   -b cookies.txt
 ```
 
@@ -147,7 +147,7 @@ To update a note, you need to send a `PUT` request to the `/notes/{noteId}` endp
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl PUT http://localhost:8080/notes/1 \
+curl -X PUT http://localhost:8080/notes/1 \
   -H "Content-Type: application/json" \
   -d '{
     "noteTitle": "Titre modifié",
@@ -162,6 +162,6 @@ To delete a note, you need to send a `DELETE` request to the `/notes/{noteId}` e
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl DELETE http://localhost:8080/notes/1 \
+curl -X DELETE http://localhost:8080/notes/1 \
   -b cookies.txt
 ```

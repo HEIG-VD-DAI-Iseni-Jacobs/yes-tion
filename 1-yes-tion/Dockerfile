@@ -21,7 +21,7 @@ WORKDIR /app
 COPY target/yes-tion-1.0-SNAPSHOT.jar /app/yes-tion-1.0-SNAPSHOT.jar
 
 # Expose the dedicated port (mainly for documentation purposes, not really needed)
-EXPOSE 8080
+EXPOSE 2025
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "yes-tion-1.0-SNAPSHOT.jar"]

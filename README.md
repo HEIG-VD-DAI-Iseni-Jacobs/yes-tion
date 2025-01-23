@@ -3,6 +3,7 @@
 
 ## Table of contents
 - [About](#about)
+  - [API](#api)
   - [Limitations](#limitations)
 - [Usage](#usage)
   - [Requirements](#requirements)
@@ -32,6 +33,10 @@ It is a really simplified version of the popular note-taking application [Notion
 The domain names used in this project are:
 - [traefik.arthurjacobs.duckdns.org](https://traefik.arthurjacobs.duckdns.org) - Traefik dashboard
 - [yes-tion.arthurjacobs.duckdns.org](https://yes-tion.arthurjacobs.duckdns.org) - Yes-tion application
+
+### API
+
+You can find the API documentation [here](./9-docs/API.md).
 
 ### Limitations
 

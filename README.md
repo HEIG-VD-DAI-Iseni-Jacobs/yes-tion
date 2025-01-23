@@ -3,6 +3,8 @@
 
 ## Table of contents
 - [About](#about)
+  - [API](#api)
+  - [Limitations](#limitations)
 - [Usage](#usage)
   - [Requirements](#requirements)
   - [Create an account](#create-an-account)
@@ -29,13 +31,29 @@ This project is a simple web application that allows users to create, read, upda
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
 The domain names used in this project are:
-- traefik.arthurjacobs.duckdns.org
-- yes-tion.arthurjacobs.duckdns.org
+- [traefik.arthurjacobs.duckdns.org](https://traefik.arthurjacobs.duckdns.org) - Traefik dashboard
+- [yes-tion.arthurjacobs.duckdns.org](https://yes-tion.arthurjacobs.duckdns.org) - Yes-tion application
+
+### API
+
+You can find the API documentation [here](./9-docs/API.md).
+
+### Limitations
+
+Even though we think to have set up traefik correctly with Let's Encrypt, we were not able to successfully get a certificate for the yes-tion domain.
+Here is the error we found in the docker logs:
+
+```text
+traefik-1  | 2025-01-23T21:35:46Z ERR Unable to obtain ACME certificate for domains error="unable to generate a certificate for the domains [arthurjacobs.duckdns.org *.arthurjacobs.duckdns.org]: error: one or more domains had a problem:\n[*.arthurjacobs.duckdns.org] propagation: time limit exceeded: last error: could not find zone: [fqdn=_acme-challenge.arthurjacobs.duckdns.org.] unexpected response for '_acme-challenge.arthurjacobs.duckdns.org.' [question='_acme-challenge.arthurjacobs.duckdns.org. IN  SOA', code=SERVFAIL]\n[arthurjacobs.duckdns.org] propagation: time limit exceeded: last error: could not find zone: [fqdn=_acme-challenge.arthurjacobs.duckdns.org.] unexpected response for '_acme-challenge.arthurjacobs.duckdns.org.' [question='_acme-challenge.arthurjacobs.duckdns.org. IN  SOA', code=SERVFAIL]\n" ACME CA=https://acme-v02.api.letsencrypt.org/directory acmeCA=https://acme-v02.api.letsencrypt.org/directory domains=["arthurjacobs.duckdns.org","*.arthurjacobs.duckdns.org"] providerName=letsencrypt.acme routerName=traefik@docker rule=Host(`traefik.arthurjacobs.duckdns.org`)
+
+```
+
+But it unfortunately did not help us to solve the issue.
+
 ## Usage
 
 In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
-
-You can acces the traefik dashboard at the following link: [https://traefik.arthurjacobs.duckdns.org/dashboard/](https://traefik.arthurjacobs.duckdns.org/dashboard/)
+We assume you already have [set up your environment](./9-docs/setup-infrastructure.md) and have [the application running](./9-docs/build-and-run.md).
 
 ### Requirements
 
@@ -419,4 +437,4 @@ docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
 ```
 
 ### Build and publish with Docker
-To build and publish the Docker image, you can refer to the following file: [setup-and-deploy.md](docs/setup-and-deploy.md)
+To build and publish the Docker image, you can refer to the following file: [build-and-run.md](./9-docs/build-and-run.md)

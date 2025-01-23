@@ -39,18 +39,18 @@ services:
       - --certificatesresolvers.letsencrypt.acme.dnschallenge.delayBeforeCheck=30
     restart: unless-stopped
     env_file:
-      - .env
+#      - .env
 #      - ../.env
       # We load the environment variables from the .env file for the DNS challenge
       - dns-challenge.env
     networks:
       - traefik_network
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./letsencrypt:/letsencrypt
+      - ./letsencrypt:/letsencrypt:rw
     labels:
       ## Traefik
       - traefik.enable=true

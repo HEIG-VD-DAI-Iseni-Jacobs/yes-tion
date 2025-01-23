@@ -4,6 +4,7 @@ import static ch.heigvd.dai.utils.CookieUtils.getUserIdFromCookie;
 
 import ch.heigvd.dai.notes.Note;
 import io.javalin.http.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,12 +17,23 @@ public class UsersController {
 
   private final ConcurrentHashMap<Integer, User> users;
   private final ConcurrentHashMap<Integer, Note> notes;
+  private final ConcurrentHashMap<Integer, LocalDateTime> usersCache;
+  private final ConcurrentHashMap<Integer, LocalDateTime> notesCache;
   private final AtomicInteger userIdCounter = new AtomicInteger(1);
 
+  // This is a magic number used to store the users' list last modification date
+  // As the ID for users starts from 1, it is safe to reserve the value -1 for all users
+  private final Integer RESERVED_ID_TO_IDENTIFY_ALL_USERS = -1;
+
   public UsersController(
-      ConcurrentHashMap<Integer, User> users, ConcurrentHashMap<Integer, Note> notes) {
+      ConcurrentHashMap<Integer, User> users,
+      ConcurrentHashMap<Integer, Note> notes,
+      ConcurrentHashMap<Integer, LocalDateTime> usersCache,
+      ConcurrentHashMap<Integer, LocalDateTime> notesCache) {
     this.users = users;
     this.notes = notes;
+    this.usersCache = usersCache;
+    this.notesCache = notesCache;
   }
 
   /**
@@ -56,7 +68,16 @@ public class UsersController {
     // store the user
     users.put(user.userId, user);
 
+    // Store the last modification date of the user
+    LocalDateTime now = LocalDateTime.now();
+    usersCache.put(user.userId, now);
+
+    // Invalidate the cache for all users
+    usersCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_USERS);
+
     ctx.status(HttpStatus.CREATED);
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
     ctx.json(user);
   }
 
@@ -104,7 +125,30 @@ public class UsersController {
    */
   public void getProfile(Context ctx) {
     Integer userId = getUserIdFromCookie(ctx, users);
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && usersCache.get(userId).equals(lastKnownModification)) {
+      throw new NotModifiedResponse();
+    }
     User user = users.get(userId);
+    if (user == null) {
+      throw new UnauthorizedResponse();
+    }
+    LocalDateTime now;
+    if (usersCache.containsKey(user.userId)) {
+      // If it is already in the cache, get the last modification date
+      now = usersCache.get(user.userId);
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      usersCache.put(user.userId, now);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
     ctx.json(user);
   }
 
@@ -118,6 +162,15 @@ public class UsersController {
    */
   public void updateProfile(Context ctx) {
     Integer userId = getUserIdFromCookie(ctx, users);
+
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Unmodified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && !usersCache.get(userId).equals(lastKnownModification)) {
+      throw new PreconditionFailedResponse();
+    }
 
     // body deserialization
     SignUpOrUpdateRequest request = ctx.bodyValidator(SignUpOrUpdateRequest.class).get();
@@ -143,6 +196,21 @@ public class UsersController {
       user.lastName = request.lastName;
     }
 
+    LocalDateTime now;
+    if (usersCache.containsKey(user.userId)) {
+      // If it is already in the cache, get the last modification date
+      now = usersCache.get(user.userId);
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      usersCache.put(user.userId, now);
+
+      // Invalidate the cache for all users
+      usersCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_USERS);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
     ctx.json(user);
   }
 
@@ -154,9 +222,24 @@ public class UsersController {
    */
   public void deleteProfile(Context ctx) {
     Integer userId = getUserIdFromCookie(ctx, users);
+
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Unmodified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && !usersCache.get(userId).equals(lastKnownModification)) {
+      throw new PreconditionFailedResponse();
+    }
+
     // delete the notes of the user
     notes.values().removeIf(note -> note.userId.equals(userId));
     users.remove(userId);
+    // Invalidate the cache for the user
+    usersCache.remove(userId);
+
+    // Invalidate the cache for all users
+    usersCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_USERS);
     ctx.removeCookie("user");
     ctx.status(HttpStatus.NO_CONTENT);
   }

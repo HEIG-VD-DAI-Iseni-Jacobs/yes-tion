@@ -56,12 +56,15 @@ Afterward, you can keep this file or delete it after you finish your tests.
 To create an account, you need to send a `POST` request to the `/users` endpoint with a JSON payload containing the first name, last name, and email of the user.
 
 ```bash
-curl -X POST http://localhost:8080/signup \
-  -d '{
+curl -i \
+ -X POST \
+ -H "Content-Type: application/json" \
+ -d '{
     "firstName": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com"
-  }'
+  }' \
+  http://localhost:8080/signup
 ```
 
 ### Log in
@@ -131,7 +134,7 @@ curl -X POST http://localhost:8080/notes \
     "noteTitle": "Ma première note",
     "noteContent": "Contenu de ma note"
   }' \
-  -d cookies.txt
+  -b cookies.txt
 ```
 
 ### Get all notes

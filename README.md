@@ -1,10 +1,12 @@
+**Authors :** Iseni Aladin & Jacobs Arthur
 # Yes-tion
 
 [No-tion](https://github.com/HEIG-VD-DAI-Iseni-Jacobs/no-tion), but yes.
 
+
 ## Description
 
-This project is a simple web application that allows users to create, read, update, and delete notes.
+This project is a simple web application that allows users to create, read, update, and delete accounts and the notes associated to them.
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
 # `TODO` Run with docker
@@ -57,9 +59,9 @@ To create an account, you need to send a `POST` request to the `/users` endpoint
 
 ```bash
 curl -i \
- -X POST \
- -H "Content-Type: application/json" \
- -d '{
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
     "firstName": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com"
@@ -67,14 +69,37 @@ curl -i \
   http://localhost:8080/signup
 ```
 
+Output:
+```bash
+HTTP/1.1 201 Created
+Date: Thu, 23 Jan 2025 19:01:23 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:01:23.913262213
+Content-Length: 79
+
+{"userId":1,"firstName":"John","lastName":"Doe","email":"john.doe@example.com"}
+```
+
 ### Log in
 
 To login, you need to send a `POST` request to the `/login` endpoint with a JSON payload containing the email of the user and store the cookies in a file.
 
 ```bash
-curl -X POST http://localhost:8080/login \
+curl -i \
+  -X POST \
+  -H "Content-Type: application/json" \
   -d '{"email": "john.doe@example.com"}' \
-  -c cookies.txt
+  -c cookies.txt \
+  http://localhost:8080/login
+```
+
+Output:
+```bash
+HTTP/1.1 204 No Content
+Date: Thu, 23 Jan 2025 19:04:12 GMT
+Content-Type: text/plain
+Set-Cookie: user=1; Path=/
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
 ```
 
 ### Log out
@@ -83,18 +108,42 @@ To logout, you need to send a `POST` request to the `/logout` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X POST http://localhost:8080/logout \
-  -c cookies.txt
+curl -i \
+  -X POST \
+  -c cookies.txt \
+  http://localhost:8080/logout
+```
+
+Output:
+```bash
+HTTP/1.1 204 No Content
+Date: Thu, 23 Jan 2025 19:05:00 GMT
+Content-Type: text/plain
+Set-Cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
 ```
 
 ### Get the profile
 
-To get the profile, you need to send a `GET` request to the `/profile` endpoint.
+To get the profile, you need to be logged in and send a `GET` request to the `/profile` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X GET http://localhost:8080/profile \
-  -b cookies.txt
+curl -i \
+  -X GET \
+  -b cookies.txt \
+  http://localhost:8080/profile
+```
+
+Output:
+```bash
+HTTP/1.1 200 OK
+Date: Thu, 23 Jan 2025 19:08:08 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:01:23.913262213
+Content-Length: 79
+
+{"userId":1,"firstName":"John","lastName":"Doe","email":"john.doe@example.com"}
 ```
 
 ### Update the profile
@@ -103,13 +152,26 @@ To update the profile, you need to send a `PUT` request to the `/profile` endpoi
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X PUT http://localhost:8080/profile \
+curl -i \
+  -X PUT  \
   -d '{
     "firstName": "Jane",
     "lastName": "Doe",
     "email": ""
     }' \
-    -b cookies.txt
+    -b cookies.txt \
+    http://localhost:8080/profile
+```
+
+Output:
+```bash
+HTTP/1.1 200 OK
+Date: Thu, 23 Jan 2025 19:08:43 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:01:23.913262213
+Content-Length: 79
+
+{"userId":1,"firstName":"Jane","lastName":"Doe","email":"john.doe@example.com"}
 ```
 
 ### Delete the account
@@ -118,8 +180,19 @@ To delete the account, you need to send a `DELETE` request to the `/profile` end
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X DELETE http://localhost:8080/profile \
-  -c cookies.txt
+curl -i \
+  -X DELETE \
+  -b cookies.txt \
+  http://localhost:8080/profile
+```
+
+Output:
+```bash
+HTTP/1.1 204 No Content
+Date: Thu, 23 Jan 2025 19:14:41 GMT
+Content-Type: text/plain
+Set-Cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
 ```
 
 ### Create a note
@@ -128,13 +201,26 @@ To create a note, you need to send a `POST` request to the `/notes` endpoint wit
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X POST http://localhost:8080/notes \
+curl -i \
+  -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "noteTitle": "Ma première note",
-    "noteContent": "Contenu de ma note"
+    "noteTitle": "Ma seconde note",
+    "noteContent": "Contenu de ma seconde note"
   }' \
-  -b cookies.txt
+  -b cookies.txt \
+  http://localhost:8080/notes
+```
+
+Output:
+```bash
+HTTP/1.1 201 Created
+Date: Thu, 23 Jan 2025 19:16:33 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:16:33.036126574
+Content-Length: 90
+
+{"noteId":1,"userId":3,"noteTitle":"Ma première note","noteContent":"Contenu de ma note"}
 ```
 
 ### Get all notes
@@ -143,8 +229,31 @@ To get all notes, you need to send a `GET` request to the `/notes` endpoint.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X GET http://localhost:8080/notes \
-  -b cookies.txt
+curl -i \
+  -X GET \
+  -b cookies.txt \
+  http://localhost:8080/notes
+```
+
+Output:
+```bash
+HTTP/1.1 200 OK
+Date: Thu, 23 Jan 2025 19:18:09 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:18:09.759392633
+Content-Length: 189
+
+[{
+  "noteId":1,
+  "userId":3,
+  "noteTitle":"Ma première note",
+  "noteContent":"Contenu de ma note"},
+  {
+  "noteId":2,
+  "userId":3,
+  "noteTitle":"Ma seconde note",
+  "noteContent":"Contenu de ma seconde note"
+}]
 ```
 
 ### Get a note
@@ -153,8 +262,10 @@ To get a note, you need to send a `GET` request to the `/notes/{noteId}` endpoin
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X GET http://localhost:8080/notes/1 \
-  -b cookies.txt
+curl -i \
+  -X GET \
+  -b cookies.txt \
+  http://localhost:8080/notes/2
 ```
 
 ### Update a note
@@ -172,12 +283,35 @@ curl -X PUT http://localhost:8080/notes/1 \
   -b cookies.txt
 ```
 
+Output:
+```bash
+HTTP/1.1 200 OK
+Date: Thu, 23 Jan 2025 19:20:58 GMT
+Content-Type: application/json
+Last-Modified: 2025-01-23T20:18:01.393036634
+Content-Length: 96
+
+{"noteId":2,
+ "userId":3,
+ "noteTitle":"Ma seconde note",
+ "noteContent":"Contenu de ma seconde note"}
+```
+
 ### Delete a note
 
 To delete a note, you need to send a `DELETE` request to the `/notes/{noteId}` endpoint, where `{noteId}` is the identifier of the note.
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X DELETE http://localhost:8080/notes/1 \
-  -b cookies.txt
+curl -i \
+  -X DELETE \
+  -b cookies.txt \
+  http://localhost:8080/notes/1
+```
+
+Output:
+```bash
+HTTP/1.1 204 No Content
+Date: Thu, 23 Jan 2025 19:21:52 GMT
+Content-Type: text/plain
 ```

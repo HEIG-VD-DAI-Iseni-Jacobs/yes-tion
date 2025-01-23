@@ -1,38 +1,33 @@
-**Authors :** Iseni Aladin & Jacobs Arthur
+**Authors :** [Iseni Aladin](https://github.com/aladin-heig) & [Jacobs Arthur](https://github.com/Arthur2479)
 # Yes-tion
 
+## Table of contents
+- [About](#about)
+- [Usage](#usage)
+  - [Requirements](#requirements)
+  - [Create an account](#create-an-account)
+  - [Log in](#log-in)
+  - [Log out](#log-out)
+  - [Get the profile](#get-the-profile)
+  - [Update the profile](#update-the-profile)
+  - [Delete the account](#delete-the-account)
+  - [Create a note](#create-a-note)
+  - [Get all notes](#get-all-notes)
+  - [Get a note](#get-a-note)
+  - [Update a note](#update-a-note)
+  - [Delete a note](#delete-a-note)
+- [Contributing](#contributing)
+  - [Start an issue and fork the project](#start-an-issue-and-fork-the-project)
+  - [Run with docker](#run-with-docker)
+  - [Build and publish with Docker](#build-and-publish-with-docker)
+
+
+## About
 [No-tion](https://github.com/HEIG-VD-DAI-Iseni-Jacobs/no-tion), but yes.
-
-
-## Description
 
 This project is a simple web application that allows users to create, read, update, and delete accounts and the notes associated to them.
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
-# `TODO` Run with docker
-Build using `./build.sh` (may need to use chmod to update rights)
-
-```bash
-docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
-```
-
-publish the image to the github container registry
-
-```bash
-./publish.sh
-```
-
-## Launch app with Maven
-
-```bash
-# Launch the application without tests
-mvn spotless:apply dependency:go-offline clean compile package -DskipTests
-
-# Launch tests
-mvn test
-```
-
-# `TODO` : Modify the commands to execute them with the vm
 ## Usage
 
 In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
@@ -59,6 +54,8 @@ To create an account, you need to send a `POST` request to the `/users` endpoint
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{
@@ -66,18 +63,21 @@ curl -i \
     "lastName": "Doe",
     "email": "john.doe@example.com"
   }' \
-  http://localhost:8080/signup
+  https://yes-tion.arthurjacobs.duckdns.org/signup
 ```
 
 Output:
 ```bash
-HTTP/1.1 201 Created
-Date: Thu, 23 Jan 2025 19:01:23 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:01:23.913262213
-Content-Length: 79
+HTTP/2 201
+content-type: application/json
+date: Thu, 23 Jan 2025 19:56:05 GMT
+content-length: 79
 
-{"userId":1,"firstName":"John","lastName":"Doe","email":"john.doe@example.com"}
+{
+  "userId":1,"firstName":"John",
+  "lastName":"Doe",
+  "email":"john.doe@example.com"
+}
 ```
 
 ### Log in
@@ -86,20 +86,22 @@ To login, you need to send a `POST` request to the `/login` endpoint with a JSON
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"email": "john.doe@example.com"}' \
   -c cookies.txt \
-  http://localhost:8080/login
+  https://yes-tion.arthurjacobs.duckdns.org/login
 ```
 
 Output:
 ```bash
-HTTP/1.1 204 No Content
-Date: Thu, 23 Jan 2025 19:04:12 GMT
-Content-Type: text/plain
-Set-Cookie: user=1; Path=/
-Expires: Thu, 01 Jan 1970 00:00:00 GMT
+HTTP/2 204
+content-type: text/plain
+date: Thu, 23 Jan 2025 19:59:40 GMT
+expires: Thu, 01 Jan 1970 00:00:00 GMT
+set-cookie: user=1; Path=/
 ```
 
 ### Log out
@@ -109,18 +111,20 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X POST \
   -c cookies.txt \
-  http://localhost:8080/logout
+  https://yes-tion.arthurjacobs.duckdns.org/logout
 ```
 
 Output:
 ```bash
-HTTP/1.1 204 No Content
-Date: Thu, 23 Jan 2025 19:05:00 GMT
-Content-Type: text/plain
-Set-Cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
-Expires: Thu, 01 Jan 1970 00:00:00 GMT
+HTTP/2 204
+content-type: text/plain
+date: Thu, 23 Jan 2025 20:35:07 GMT
+expires: Thu, 01 Jan 1970 00:00:00 GMT
+set-cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
 ```
 
 ### Get the profile
@@ -130,20 +134,26 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X GET \
   -b cookies.txt \
-  http://localhost:8080/profile
+  https://yes-tion.arthurjacobs.duckdns.org/profile
 ```
 
 Output:
 ```bash
-HTTP/1.1 200 OK
-Date: Thu, 23 Jan 2025 19:08:08 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:01:23.913262213
-Content-Length: 79
+HTTP/2 200
+content-type: application/json
+date: Thu, 23 Jan 2025 20:01:29 GMT
+content-length: 79
 
-{"userId":1,"firstName":"John","lastName":"Doe","email":"john.doe@example.com"}
+{
+  "userId":1,
+  "firstName":"John",
+  "lastName":"Doe",
+  "email":"john.doe@example.com"
+}
 ```
 
 ### Update the profile
@@ -153,6 +163,8 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X PUT  \
   -d '{
     "firstName": "Jane",
@@ -160,18 +172,22 @@ curl -i \
     "email": ""
     }' \
     -b cookies.txt \
-    http://localhost:8080/profile
+    https://yes-tion.arthurjacobs.duckdns.org/profile
 ```
 
 Output:
 ```bash
-HTTP/1.1 200 OK
-Date: Thu, 23 Jan 2025 19:08:43 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:01:23.913262213
-Content-Length: 79
+HTTP/2 200
+content-type: application/json
+date: Thu, 23 Jan 2025 20:36:45 GMT
+content-length: 79
 
-{"userId":1,"firstName":"Jane","lastName":"Doe","email":"john.doe@example.com"}
+{
+  "userId":1,
+  "firstName":"Jane",
+  "lastName":"Doe",
+  "email":"john.doe@example.com"
+}
 ```
 
 ### Delete the account
@@ -181,18 +197,20 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X DELETE \
   -b cookies.txt \
-  http://localhost:8080/profile
+  https://yes-tion.arthurjacobs.duckdns.org/profile
 ```
 
 Output:
 ```bash
-HTTP/1.1 204 No Content
-Date: Thu, 23 Jan 2025 19:14:41 GMT
-Content-Type: text/plain
-Set-Cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
-Expires: Thu, 01 Jan 1970 00:00:00 GMT
+HTTP/2 204
+content-type: text/plain
+date: Thu, 23 Jan 2025 20:49:08 GMT
+expires: Thu, 01 Jan 1970 00:00:00 GMT
+set-cookie: user=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0
 ```
 
 ### Create a note
@@ -202,25 +220,31 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "noteTitle": "Ma seconde note",
-    "noteContent": "Contenu de ma seconde note"
+    "noteTitle": "Ma première note",
+    "noteContent": "Contenu de ma première note"
   }' \
   -b cookies.txt \
-  http://localhost:8080/notes
+  https://yes-tion.arthurjacobs.duckdns.org/notes
 ```
 
 Output:
 ```bash
-HTTP/1.1 201 Created
-Date: Thu, 23 Jan 2025 19:16:33 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:16:33.036126574
-Content-Length: 90
+HTTP/2 201
+content-type: application/json
+date: Thu, 23 Jan 2025 20:37:55 GMT
+content-length: 100
 
-{"noteId":1,"userId":3,"noteTitle":"Ma première note","noteContent":"Contenu de ma note"}
+{
+  "noteId":1,
+  "userId":1,
+  "noteTitle":"Ma première note",
+  "noteContent":"Contenu de ma première note"
+}
 ```
 
 ### Get all notes
@@ -230,27 +254,28 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X GET \
   -b cookies.txt \
-  http://localhost:8080/notes
+  https://yes-tion.arthurjacobs.duckdns.org/notes
 ```
 
 Output:
 ```bash
-HTTP/1.1 200 OK
-Date: Thu, 23 Jan 2025 19:18:09 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:18:09.759392633
-Content-Length: 189
+HTTP/2 200
+content-type: application/json
+date: Thu, 23 Jan 2025 20:39:21 GMT
+content-length: 199
 
 [{
   "noteId":1,
-  "userId":3,
+  "userId":1,
   "noteTitle":"Ma première note",
-  "noteContent":"Contenu de ma note"},
-  {
+  "noteContent":"Contenu de ma première note"
+},{
   "noteId":2,
-  "userId":3,
+  "userId":1,
   "noteTitle":"Ma seconde note",
   "noteContent":"Contenu de ma seconde note"
 }]
@@ -263,9 +288,26 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X GET \
   -b cookies.txt \
-  http://localhost:8080/notes/2
+  https://yes-tion.arthurjacobs.duckdns.org/notes/2
+```
+
+Output:
+```bash
+HTTP/2 200
+content-type: application/json
+date: Thu, 23 Jan 2025 20:40:44 GMT
+content-length: 96
+
+{
+  "noteId":2,
+  "userId":1,
+  "noteTitle":"Ma seconde note",
+  "noteContent":"Contenu de ma seconde note"
+}
 ```
 
 ### Update a note
@@ -274,27 +316,32 @@ To update a note, you need to send a `PUT` request to the `/notes/{noteId}` endp
 You also need to send the cookies stored in the login step.
 
 ```bash
-curl -X PUT http://localhost:8080/notes/1 \
+curl -i \
+  -k \
+  -L \
+  -X PUT \
   -H "Content-Type: application/json" \
   -d '{
     "noteTitle": "Titre modifié",
     "noteContent": "Nouveau contenu"
   }' \
-  -b cookies.txt
+  -b cookies.txt \
+  https://yes-tion.arthurjacobs.duckdns.org/notes/1
 ```
 
 Output:
 ```bash
-HTTP/1.1 200 OK
-Date: Thu, 23 Jan 2025 19:20:58 GMT
-Content-Type: application/json
-Last-Modified: 2025-01-23T20:18:01.393036634
-Content-Length: 96
+HTTP/2 200
+content-type: application/json
+date: Thu, 23 Jan 2025 20:42:39 GMT
+content-length: 84
 
-{"noteId":2,
- "userId":3,
- "noteTitle":"Ma seconde note",
- "noteContent":"Contenu de ma seconde note"}
+{
+  "noteId":1,
+  "userId":1,
+  "noteTitle":"Titre modifié",
+  "noteContent":"Nouveau contenu"
+}
 ```
 
 ### Delete a note
@@ -304,14 +351,74 @@ You also need to send the cookies stored in the login step.
 
 ```bash
 curl -i \
+  -k \
+  -L \
   -X DELETE \
   -b cookies.txt \
-  http://localhost:8080/notes/1
+  https://yes-tion.arthurjacobs.duckdns.org/notes/1
 ```
 
 Output:
 ```bash
-HTTP/1.1 204 No Content
-Date: Thu, 23 Jan 2025 19:21:52 GMT
-Content-Type: text/plain
+HTTP/2 204
+content-type: text/plain
+date: Thu, 23 Jan 2025 20:47:28 GMT
+```
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+### Start an issue and fork the project
+
+1. Create an issue describing the feature you want to implement
+2. Fork the project and clone it
+
+```shell
+git clone git@github.com:<your-GitHub-name>/<repo-name>.git
+```
+
+3. Create your feature branch
+
+````shell
+git checkout -b feature/my-feature
+````
+
+4. Build the project
+
+````shell
+mvn spotless:apply dependency:go-offline clean compile package -DskipTests
+````
+
+5Add and commit your changes
+
+````shell
+git add <files>
+git commit -m "Add my feature"
+````
+
+6Push the branch
+
+```shell
+git push
+```
+
+7. Open a Pull Request
+
+If you have any questions or suggestions, feel free to open
+an [issue](https://github.com/HEIG-VD-DAI-Iseni-Jacobs/pictures-cli-editor/issues) on GitHub.
+
+### Run with docker
+Build using `./build.sh` (may need to use chmod to update rights)
+
+```bash
+docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
+```
+
+
+### Build and publish with Docker
+Publish the image to the GitHub container registry
+
+```bash
+./publish.sh
 ```

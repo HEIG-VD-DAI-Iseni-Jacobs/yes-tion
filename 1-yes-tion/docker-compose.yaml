@@ -8,9 +8,7 @@ services:
     image: ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion:latest
     restart: unless-stopped
     env_file:
-      - .env
-      # We load the environment variables from the .env file for the DNS challenge
-      - dns-challenge.env
+      - ../.env
     networks:
       - traefik_network
     labels:

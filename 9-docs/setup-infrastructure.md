@@ -1,116 +1,4 @@
-# Deploy the app
-
-## Publish with Docker
-
-### Create a personal access token
-
-You will need a personal access token to publish an image on GitHub Container
-Registry.
-
-A personal access token is a token that you can use to authenticate to GitHub
-instead of using your password. It is more secure than using your password.
-
-Follow the instructions on the official website to authenticate with a personal
-access token (classic):
-<https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry>.
-
-> [!NOTE]
->
-> You can find the personal access token in the settings of your GitHub account:
-> **Settings** > **Developer settings** (at the very end of the left side bar) >
-> **Personal access tokens** > **Tokens (classic)**.
-
-### Login to GitHub Container Registry
-
-Login to GitHub Container Registry with the following command, replacing
-`<username>` with your GitHub username:
-
-```sh
-# Login to GitHub Container Registry
-docker login ghcr.io -u <username>
-```
-
-When asked for the password, use the personal access token you created earlier.
-
-The output should be similar to the following:
-
-```text
-Login Succeeded
-```
-
-### Tag the image correctly for GitHub Container Registry
-
-The image must be tagged with the following format:
-`ghcr.io/<username>/<image>:<tag>`.
-
-Run the following command to tag the image with the correct format, replacing
-`<username>` with your GitHub username:
-
-```sh
-# Tag the image with the correct format
-docker tag java-ios-docker ghcr.io/<username>/java-ios-docker:latest
-```
-
-You can list all the images with the following command:
-
-```sh
-# List all the images
-docker images
-```
-
-The output should be similar to the following:
-
-```text
-REPOSITORY                                                                                    TAG       IMAGE ID       CREATED         SIZE
-java-ios-docker                                                                               latest    8214c1a1c97c   3 minutes ago   282MB
-ghcr.io/ludelafo/java-ios-docker                                                              latest    8214c1a1c97c   3 minutes ago   282MB
-```
-
-You can delete the local `java-ios-docker` image with the following command:
-
-```sh
-# Delete java-ios-docker image
-docker rmi java-ios-docker
-```
-
-### Publish the image on GitHub Container Registry
-
-Now publish the image on GitHub Container Registry with the following command,
-replacing `<username>` with your GitHub username:
-
-```sh
-# Publish the image on GitHub Container Registry
-docker push ghcr.io/<username>/java-ios-docker
-```
-
-The output should be similar to the following:
-
-```text
-The push refers to repository [ghcr.io/ludelafo/java-ios-docker]
-130abe5d3a5e: Pushed
-90ab30cf733e: Pushed
-6cc5022303de: Pushed
-750416b760e2: Pushed
-f975d1357d1a: Pushed
-0bf35e9086dc: Pushed
-f36fd4bb7334: Pushed
-latest: digest: sha256:d0d83a97c4522ddbeb8968e9d509fdebecf0450ca1651c13c14ca774f01e8675 size: 1784
-```
-
-You can now go to the GitHub Container Registry page of your repository to check
-that the image has been published, replacing `<username>` with your GitHub
-username: `https://github.com/<username>?tab=packages`.
-
-As you can notice, the image is private by default. You can change the
-visibility of the image in the settings of the image.
-
-You can keep your images private if you want. Just be aware that you will need
-to authenticate to GitHub Container Registry to pull the image.
-
-You can delete the local image if you want.
-
-Congrats! You have just published your first image on GitHub Container Registry!
-
+_This is an extract from HEIG-VD DAI course : [link](https://github.com/heig-vd-dai-course)_
 
 ## Set up a virtual machine
 
@@ -122,11 +10,6 @@ This will automatically install SCP as well.
 #### Install the SSH client
 
 The SSH client is available on most operating systems.
-
-You certainly already have it installed on your operating system as you used it
-in the
-[Git, GitHub and Markdown](https://github.com/heig-vd-dai-course/heig-vd-dai-course/tree/main/03-git-github-and-markdown)
-chapter.
 
 If not, follow the instructions below to install it:
 
@@ -335,9 +218,7 @@ see an error message warning you that the fingerprint has changed.
 > `message` field with the one displayed when you connect to the virtual for the
 > first time.
 
-## Deploy the app
-
-### Obtain a domain name
+## Obtain a domain name
 
 In this section, you will acquire a domain name.
 
@@ -469,3 +350,14 @@ whoami service:
 docker compose down
 ```
 
+## Clone this repo
+
+In this section, you will clone this repository to your virtual machine.
+
+### Clone the repository
+
+```bash
+git clone https://github.com/HEIG-VD-DAI-Iseni-Jacobs/yes-tion.git
+```
+
+You're good to go to the next step!

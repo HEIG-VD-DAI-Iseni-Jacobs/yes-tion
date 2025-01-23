@@ -3,6 +3,7 @@
 
 ## Table of contents
 - [About](#about)
+  - [Limitations](#limitations)
 - [Usage](#usage)
   - [Requirements](#requirements)
   - [Create an account](#create-an-account)
@@ -31,6 +32,18 @@ It is a really simplified version of the popular note-taking application [Notion
 The domain names used in this project are:
 - [traefik.arthurjacobs.duckdns.org](https://traefik.arthurjacobs.duckdns.org) - Traefik dashboard
 - [yes-tion.arthurjacobs.duckdns.org](https://yes-tion.arthurjacobs.duckdns.org) - Yes-tion application
+
+### Limitations
+
+Even though we think to have set up traefik correctly with Let's Encrypt, we were not able to successfully get a certificate for the yes-tion domain.
+Here is the error we found in the docker logs:
+
+```text
+traefik-1  | 2025-01-23T21:35:46Z ERR Unable to obtain ACME certificate for domains error="unable to generate a certificate for the domains [arthurjacobs.duckdns.org *.arthurjacobs.duckdns.org]: error: one or more domains had a problem:\n[*.arthurjacobs.duckdns.org] propagation: time limit exceeded: last error: could not find zone: [fqdn=_acme-challenge.arthurjacobs.duckdns.org.] unexpected response for '_acme-challenge.arthurjacobs.duckdns.org.' [question='_acme-challenge.arthurjacobs.duckdns.org. IN  SOA', code=SERVFAIL]\n[arthurjacobs.duckdns.org] propagation: time limit exceeded: last error: could not find zone: [fqdn=_acme-challenge.arthurjacobs.duckdns.org.] unexpected response for '_acme-challenge.arthurjacobs.duckdns.org.' [question='_acme-challenge.arthurjacobs.duckdns.org. IN  SOA', code=SERVFAIL]\n" ACME CA=https://acme-v02.api.letsencrypt.org/directory acmeCA=https://acme-v02.api.letsencrypt.org/directory domains=["arthurjacobs.duckdns.org","*.arthurjacobs.duckdns.org"] providerName=letsencrypt.acme routerName=traefik@docker rule=Host(`traefik.arthurjacobs.duckdns.org`)
+
+```
+
+But it unfortunately did not help us to solve the issue.
 
 ## Usage
 

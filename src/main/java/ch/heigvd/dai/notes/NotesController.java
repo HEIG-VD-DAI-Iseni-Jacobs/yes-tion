@@ -4,6 +4,7 @@ import static ch.heigvd.dai.utils.CookieUtils.getUserIdFromCookie;
 
 import ch.heigvd.dai.users.User;
 import io.javalin.http.*;
+import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,10 +17,19 @@ public class NotesController {
   private final ConcurrentHashMap<Integer, User> users;
   private final AtomicInteger noteIdCounter = new AtomicInteger(1);
 
+  // private final ConcurrentHashMap<Integer, LocalDateTime> usersCache;
+  private final ConcurrentHashMap<Integer, LocalDateTime> notesCache;
+
+  private final Integer RESERVED_ID_TO_IDENTIFY_ALL_NOTES = -1;
+
   public NotesController(
-      ConcurrentHashMap<Integer, User> users, ConcurrentHashMap<Integer, Note> notes) {
+      ConcurrentHashMap<Integer, User> users,
+      ConcurrentHashMap<Integer, Note> notes,
+      ConcurrentHashMap<Integer, LocalDateTime> notesCache) {
     this.users = users;
     this.notes = notes;
+    // this.usersCache = usersCache;
+    this.notesCache = notesCache;
   }
 
   /**
@@ -45,7 +55,17 @@ public class NotesController {
     Note note = new Note(noteId, currentUserId, request.noteTitle, request.noteContent);
     notes.put(noteId, note);
 
+    // Storthe last modified date of the note
+    LocalDateTime now = LocalDateTime.now();
+    notesCache.put(noteId, now);
+
+    // Invalidate the cache for all the notes
+    notesCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_NOTES);
+
     ctx.status(HttpStatus.CREATED);
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
     ctx.json(note);
   }
 
@@ -63,6 +83,15 @@ public class NotesController {
 
     // Get the note ID from the path
     Integer noteId = ctx.pathParamAsClass("id", Integer.class).get();
+
+    // Get the last known modification date of the note
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Unmodified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the note has been modified since the last known modification date
+    if (lastKnownModification != null && !notesCache.get(noteId).equals(lastKnownModification)) {
+      throw new PreconditionFailedResponse();
+    }
 
     // Deserialize the note from the request body
     CreateOrUpdateNoteRequest request =
@@ -87,6 +116,22 @@ public class NotesController {
     note.noteTitle = request.noteTitle;
     note.noteContent = request.noteContent;
 
+    LocalDateTime now;
+    if (notesCache.containsKey(noteId)) {
+      // If it is already in the cache, get the last modification date
+      now = notesCache.get(noteId);
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      notesCache.put(noteId, now);
+
+      // Invalidate the cache for all notes
+      notesCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_NOTES);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
+
     ctx.json(note);
   }
 
@@ -100,6 +145,29 @@ public class NotesController {
     // Check session
     Integer currentUserId = getUserIdFromCookie(ctx, users);
 
+    // Get the last known modification date of all notes
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if all notes have been modified since the last known modification date
+    if (lastKnownModification != null
+        && notesCache.containsKey(RESERVED_ID_TO_IDENTIFY_ALL_NOTES)
+        && notesCache.get(RESERVED_ID_TO_IDENTIFY_ALL_NOTES).equals(lastKnownModification)) {
+      throw new NotModifiedResponse();
+    }
+
+    LocalDateTime now;
+    if (notesCache.containsKey(RESERVED_ID_TO_IDENTIFY_ALL_NOTES)) {
+      // If it is already in the cache, get the last modification date
+      now = notesCache.get(RESERVED_ID_TO_IDENTIFY_ALL_NOTES);
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      notesCache.put(RESERVED_ID_TO_IDENTIFY_ALL_NOTES, now);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
     // Get the notes of the user
     ctx.json(notes.values().stream().filter(note -> note.userId.equals(currentUserId)).toArray());
   }
@@ -114,16 +182,36 @@ public class NotesController {
   public void getOneNote(Context ctx) {
     // Check session
     Integer currentUserId = getUserIdFromCookie(ctx, users);
-
     // Get the note ID from the path
     Integer noteId = ctx.pathParamAsClass("id", Integer.class).get();
-
     // Get the note
     Note note = notes.get(noteId);
+
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && notesCache.get(noteId).equals(lastKnownModification)) {
+      throw new NotModifiedResponse();
+    }
 
     if (note == null || !note.userId.equals(currentUserId)) {
       throw new NotFoundResponse("Note not found");
     }
+
+    LocalDateTime now;
+    if (notesCache.containsKey(noteId)) {
+      // If it is already in the cache, get the last modification date
+      now = notesCache.get(noteId);
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      notesCache.put(noteId, now);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
 
     ctx.json(note);
   }
@@ -145,11 +233,25 @@ public class NotesController {
     // Get the note
     Note note = notes.get(noteId);
 
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+        ctx.headerAsClass("If-Unmodified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && !notesCache.get(noteId).equals(lastKnownModification)) {
+      throw new PreconditionFailedResponse();
+    }
+
     if (note == null || !note.userId.equals(currentUserId)) {
       throw new NotFoundResponse("Note not found");
     }
 
     notes.remove(noteId);
+    // Invalidate the cache for the user
+    notesCache.remove(noteId);
+
+    // Invalidate the cache for all users
+    notesCache.remove(RESERVED_ID_TO_IDENTIFY_ALL_NOTES);
     ctx.status(HttpStatus.NO_CONTENT);
   }
 

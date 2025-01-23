@@ -77,8 +77,6 @@ services:
     restart: unless-stopped
     networks:
       - traefik_network
-    expose:
-      - "8080"
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik_network

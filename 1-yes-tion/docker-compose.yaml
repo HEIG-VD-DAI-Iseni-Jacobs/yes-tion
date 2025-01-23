@@ -1,0 +1,20 @@
+networks:
+  # We define a network for Traefik and all the services it will manage
+  traefik_network:
+    external: true
+
+services:
+  yes-tion:
+    image: ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+      # We load the environment variables from the .env file for the DNS challenge
+      - dns-challenge.env
+    networks:
+      - traefik_network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_network
+      - traefik.http.routers.yes-tion.entrypoints=https
+      - traefik.http.routers.yes-tion.rule=Host(`${YESTION_FULLY_QUALIFIED_DOMAIN_NAME}`)

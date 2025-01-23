@@ -2,8 +2,6 @@ networks:
   # We define a network for Traefik and all the services it will manage
   traefik_network:
     name: traefik_network
-    # Use external network when traefik is not started
-    external: ${TRAEFIK_EXTERNAL:-true}
 
 services:
   traefik:
@@ -72,32 +70,3 @@ services:
       - traefik.http.routers.traefik.rule=Host(`${TRAEFIK_FULLY_QUALIFIED_DOMAIN_NAME}`)
       # This is needed to access the Traefik dashboard
       - traefik.http.routers.traefik.service=api@internal
-  yes-tion:
-    image: ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion:latest
-    restart: unless-stopped
-    networks:
-      - traefik_network
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik_network
-      - traefik.http.routers.yes-tion.entrypoints=https
-      - traefik.http.routers.yes-tion.rule=Host(`${YESTION_FULLY_QUALIFIED_DOMAIN_NAME}`)
-  whoami-with-host-based-routing:
-    image: traefik/whoami:${WHOAMI_IMAGE_VERSION:-latest}
-    networks:
-      - traefik_network
-    # By using the `expose` key, we expose the port 80 of the container to the
-    # other containers in the same network without exposing it to the host
-    # machine
-    expose:
-      - 80
-    labels:
-      ## Traefik
-      - traefik.enable=true
-      - traefik.docker.network=traefik_network
-      ## Routers
-      # ATTENTION: each container must have different routers' names.
-      # In this case, the routers' names for this service is `whoami-with-host-based-routing`.
-      # Other services must have different routers' names.
-      - traefik.http.routers.whoami-with-host-based-routing.entrypoints=https
-      - traefik.http.routers.whoami-with-host-based-routing.rule=Host(`${WHOAMI_FULLY_QUALIFIED_DOMAIN_NAME}`)

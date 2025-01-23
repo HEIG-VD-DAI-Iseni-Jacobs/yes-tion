@@ -28,6 +28,9 @@
 This project is a simple web application that allows users to create, read, update, and delete accounts and the notes associated to them.
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
+The domain names used in this project are:
+- traefik.arthurjacobs.duckdns.org
+- yes-tion.arthurjacobs.duckdns.org
 ## Usage
 
 In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
@@ -411,8 +414,6 @@ If you have any questions or suggestions, feel free to open
 an [issue](https://github.com/HEIG-VD-DAI-Iseni-Jacobs/pictures-cli-editor/issues) on GitHub.
 
 ### Run with docker
-Build using `./build.sh` (may need to use chmod to update rights)
-
 ```bash
 docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
 ```

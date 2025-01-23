@@ -20,6 +20,12 @@ publish the image to the github container registry
 ./publish.sh
 ```
 
+Run with docker compose and traefik
+
+```bash
+TRAEFIK_EXTERNAL=false docker compose --profile traefik up -d
+```
+
 ## Launch app with Maven
 
 ```bash

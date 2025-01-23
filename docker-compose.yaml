@@ -2,9 +2,13 @@ networks:
   # We define a network for Traefik and all the services it will manage
   traefik_network:
     name: traefik_network
+    # Use external network when traefik is not started
+    external: ${TRAEFIK_EXTERNAL:-true}
 
 services:
   traefik:
+    profiles:
+      - traefik
     # Source for traefik docker compose config file :
     #  https://github.com/heig-vd-dai-course/heig-vd-dai-course-code-examples/blob/main/22-web-infrastructures/02-traefik/docker-compose.yaml
     image: traefik:${TRAEFIK_IMAGE_VERSION:-latest}

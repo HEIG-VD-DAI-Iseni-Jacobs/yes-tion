@@ -20,6 +20,12 @@ publish the image to the github container registry
 ./publish.sh
 ```
 
+Run with docker compose and traefik. Same for down, otherwise traefik stays up, which may be what you want
+
+```bash
+TRAEFIK_EXTERNAL=false docker compose --profile traefik up -d
+```
+
 ## Launch app with Maven
 
 ```bash

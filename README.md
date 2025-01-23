@@ -29,13 +29,13 @@ This project is a simple web application that allows users to create, read, upda
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
 The domain names used in this project are:
-- traefik.arthurjacobs.duckdns.org
-- yes-tion.arthurjacobs.duckdns.org
+- [traefik.arthurjacobs.duckdns.org](https://traefik.arthurjacobs.duckdns.org) - Traefik dashboard
+- [yes-tion.arthurjacobs.duckdns.org](https://yes-tion.arthurjacobs.duckdns.org) - Yes-tion application
+
 ## Usage
 
 In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
-
-You can acces the traefik dashboard at the following link: [https://traefik.arthurjacobs.duckdns.org/dashboard/](https://traefik.arthurjacobs.duckdns.org/dashboard/)
+We assume you already have [set up your environment](./9-docs/setup-infrastructure.md) and have [the application running](./9-docs/build-and-run.md).
 
 ### Requirements
 
@@ -419,4 +419,4 @@ docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
 ```
 
 ### Build and publish with Docker
-To build and publish the Docker image, you can refer to the following file: [setup-and-deploy.md](docs/setup-and-deploy.md)
+To build and publish the Docker image, you can refer to the following file: [build-and-run.md](./9-docs/build-and-run.md)

@@ -32,6 +32,8 @@ It is a really simplified version of the popular note-taking application [Notion
 
 In this section, we will explain how to interact with the application using the HTTP protocol and the `curl` command-line tool.
 
+You can acces the traefik dashboard at the following link: [https://traefik.arthurjacobs.duckdns.org/dashboard/](https://traefik.arthurjacobs.duckdns.org/dashboard/)
+
 ### Requirements
 
 At first, you need to have the `curl` command-line tool installed on your machine.
@@ -390,14 +392,14 @@ git checkout -b feature/my-feature
 mvn spotless:apply dependency:go-offline clean compile package -DskipTests
 ````
 
-5Add and commit your changes
+5. Add and commit your changes
 
 ````shell
 git add <files>
 git commit -m "Add my feature"
 ````
 
-6Push the branch
+6. Push the branch
 
 ```shell
 git push
@@ -415,10 +417,5 @@ Build using `./build.sh` (may need to use chmod to update rights)
 docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
 ```
 
-
 ### Build and publish with Docker
-Publish the image to the GitHub container registry
-
-```bash
-./publish.sh
-```
+To build and publish the Docker image, you can refer to the following file: [setup-and-deploy.md](docs/setup-and-deploy.md)

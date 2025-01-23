@@ -7,8 +7,8 @@ services:
   yes-tion:
     image: ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion:latest
     restart: unless-stopped
-    env_file:
-      - ../.env
+#    env_file:
+#      - ../.env
     networks:
       - traefik_network
     labels:

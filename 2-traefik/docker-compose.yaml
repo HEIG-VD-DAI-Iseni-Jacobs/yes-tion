@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-      - ../.env
+#      - ../.env
       # We load the environment variables from the .env file for the DNS challenge
       - dns-challenge.env
     networks:

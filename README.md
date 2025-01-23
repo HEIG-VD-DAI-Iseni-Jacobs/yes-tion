@@ -7,6 +7,19 @@
 This project is a simple web application that allows users to create, read, update, and delete notes.
 It is a really simplified version of the popular note-taking application [Notion](https://www.notion.so/).
 
+# `TODO` Run with docker
+Build using `./build.sh` (may need to use chmod to update rights)
+
+```bash
+docker run -p 8080:8080 ghcr.io/heig-vd-dai-iseni-jacobs/yes-tion
+```
+
+publish the image to the github container registry
+
+```bash
+./publish.sh
+```
+
 ## Launch app with Maven
 
 ```bash

@@ -78,7 +78,7 @@ services:
     networks:
       - traefik_network
     expose:
-      - "80"
+      - "8080"
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik_network
